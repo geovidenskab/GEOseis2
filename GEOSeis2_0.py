@@ -2766,7 +2766,7 @@ class GEOSeisV2:
                                     ),
                                     text=[f'{peak_period:.1f}s'],
                                     textposition="top center",
-                                    textfont=dict(size=14, color='darkgreen', weight='bold'),
+                                    textfont=dict(size=14, color='darkgreen'),
                                     showlegend=False,
                                     hovertemplate=f'Peak periode: {peak_period:.1f}s<br>Amplitude: {peak_amp:.2e}<extra></extra>'
                                 ))
