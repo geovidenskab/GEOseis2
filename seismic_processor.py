@@ -494,37 +494,35 @@ class EnhancedSeismicProcessor:
             # Afrund til en decimal
             ms_magnitude = round(ms_magnitude, 1)
             
-            # Byg forklaring
-            explanation = {
-                'magnitude': ms_magnitude,
-                'amplitude_um': amplitude_um,
-                'period_s': period_s,
-                'distance_km': distance_km,
-                'distance_deg': distance_deg,
-                'used_component': used_component,
-                'component_amplitudes': {
-                    'vertical': max_vert,
-                    'north': max_north,
-                    'east': max_east,
-                    'horizontal': max_horizontal
-                },
-                'filter_range': f"{low_freq}-{high_freq} Hz",
-                'formula': f"Ms = log₁₀({amplitude_um:.1f}/{period_s}) + 1.66×log₁₀({distance_deg:.1f}) + 3.3",
-                'depth_correction': depth_correction if earthquake_depth_km else None,
-                'calculation_steps': [
-                    f"1. Filtreret data til {low_freq}-{high_freq} Hz (20s overfladebølger)",
-                    f"2. Maksimum amplitude: {amplitude_um:.1f} μm ({used_component})",
-                    f"3. Periode: {period_s} s (standard for Ms)",
-                    f"4. Afstand: {distance_km} km = {distance_deg:.1f}°",
-                    f"5. Ms = log₁₀({amplitude_um:.1f}/{period_s}) + 1.66×log₁₀({distance_deg:.1f}) + 3.3",
-                    f"6. Ms = {ms_magnitude:.1f}"
-                ]
-            }
-            
-            if earthquake_depth_km and depth_correction != 0:
-                explanation['calculation_steps'].append(
-                    f"7. Dybdekorrektion ({earthquake_depth_km} km): {depth_correction:.2f}"
-                )
+            # Byg forklaring som formateret tekst
+            explanation = f"""### Ms Magnitude Beregning
+
+            **Beregnet Ms:** {ms_magnitude:.1f}
+
+            **Anvendt komponent:** {used_component.capitalize()}
+
+            **Amplitude værdier:**
+            - Nord: {max_north:.1f} μm
+            - Øst: {max_east:.1f} μm
+            - Vertikal: {max_vert:.1f} μm
+            - Horizontal (max): {max_horizontal:.1f} μm
+
+            **Beregningsparametre:**
+            - Periode (T): {period_s:.1f} s
+            - Afstand: {distance_km:.0f} km ({distance_deg:.1f}°)
+            - Filter: {low_freq}-{high_freq} Hz
+
+            **Formel:**
+            Ms = log₁₀(A/T) + 1.66×log₁₀(Δ) + 3.3
+
+            **Beregning:**
+            Ms = log₁₀({amplitude_um:.1f}/{period_s}) + 1.66×log₁₀({distance_deg:.1f}) + 3.3
+            Ms = {np.log10(amplitude_um/period_s):.3f} + 1.66×{np.log10(distance_deg):.3f} + 3.3
+            Ms = {np.log10(amplitude_um/period_s):.3f} + {1.66*np.log10(distance_deg):.3f} + 3.3
+            Ms = {ms_magnitude:.1f}"""
+
+            if earthquake_depth_km and earthquake_depth_km > 50 and depth_correction != 0:
+                explanation += f"\n\n**Dybdekorrektion:** {depth_correction:.3f} (dybde: {earthquake_depth_km} km)"
             
             return ms_magnitude, explanation
             
