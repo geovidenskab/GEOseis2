@@ -52,12 +52,16 @@ st.set_page_config(
 # Handle sprog parameter
 def handle_language_change():
     """Handle language change from URL parameters"""
-    params = st.query_params
-    if 'lang' in params:
-        lang = params['lang']
-        if lang in ['da', 'en']:
-            st.session_state.language = lang
-            st.query_params.clear()
+    try:
+        params = st.experimental_get_query_params()
+        if 'lang' in params:
+            lang = params['lang'][0]
+            if lang in ['da', 'en']:
+                st.session_state.language = lang
+                st.experimental_set_query_params()
+    except:
+        # Fallback hvis experimental metoder ikke virker
+        pass
 
 # Kald sprog handler
 handle_language_change()
