@@ -1,0 +1,2 @@
+# GEOseis
+Sesimsisk analyseapplikation
